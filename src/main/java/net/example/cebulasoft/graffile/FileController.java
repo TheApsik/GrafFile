@@ -16,7 +16,7 @@ public class FileController {
 
     public static void main(String[] args) {
         FilesConnectionInfo filesConnectionInfo = new FilesConnectionInfo();
-        FileController fc = new FileController("C:\\Users\\kakk\\IdeaProjects\\wimiip\\GrafFile", new FileFinder(), new FileInformer(filesConnectionInfo));
+        FileController fc = new FileController(args[0], new FileFinder(), new FileInformer(filesConnectionInfo));
         fc.run();
     }
 
