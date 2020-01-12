@@ -13,25 +13,25 @@ import org.jgrapht.graph.DirectedWeightedMultigraph;
 
 import javax.swing.*;
 
-public class GraphX {
+class GraphX {
 
-    JFrame frame;
+    private JFrame frame;
 
-    JGraphXAdapter<String, DefaultWeightedEdge> gAdapter;
-    mxIGraphLayout layout;
+    private JGraphXAdapter<String, DefaultWeightedEdge> graphAdapter;
+    private mxIGraphLayout layout;
 
 
-    public GraphX(DirectedWeightedMultigraph<String, DefaultWeightedEdge> baseGraph) {
+    GraphX(DirectedWeightedMultigraph<String, DefaultWeightedEdge> baseGraph) {
         this.frame = new JFrame("Graf");
-        this.gAdapter = new JGraphXAdapter<String, DefaultWeightedEdge>(baseGraph);
+        this.graphAdapter = new JGraphXAdapter<>(baseGraph);
 
-        this.layout = new mxCircleLayout(gAdapter);
+        this.layout = new mxCircleLayout(graphAdapter);
     }
 
-    public void Exec() {
+    void Exec() {
         SwingUtilities.invokeLater(() -> {
-            layout.execute(gAdapter.getDefaultParent());
-            frame.add(new mxGraphComponent(gAdapter));
+            layout.execute(graphAdapter.getDefaultParent());
+            frame.add(new mxGraphComponent(graphAdapter));
             frame.pack();
             frame.setLocationByPlatform(true);
             frame.setVisible(true);

@@ -7,16 +7,19 @@ public class FileController {
     private final String baseDirectory;
     private final FileFinder fileFinder;
     private final FileInformer fileInformer;
+    private final FilesConnectionInfo filesConnectionInfo;
 
-    private FileController(String baseDirectory, FileFinder fileFinder, FileInformer fileInformer) {
+
+    private FileController(String baseDirectory, FileFinder fileFinder, FileInformer fileInformer, FilesConnectionInfo filesConnectionInfo) {
         this.baseDirectory = baseDirectory;
         this.fileFinder = fileFinder;
         this.fileInformer = fileInformer;
+        this.filesConnectionInfo = filesConnectionInfo;
     }
 
     public static void main(String... args) {
         FilesConnectionInfo filesConnectionInfo = new FilesConnectionInfo();
-        FileController fc = new FileController(args[0], new FileFinder(), new FileInformer(filesConnectionInfo));
+        FileController fc = new FileController("C:\\Users\\kakk\\IdeaProjects\\wimiip\\GrafFile", new FileFinder(), new FileInformer(filesConnectionInfo), filesConnectionInfo);
         fc.scan();
     }
 
@@ -27,8 +30,8 @@ public class FileController {
         List<String> files = fileFinder.getListOfFiles(this.baseDirectory);
         fileInformer.scanFiles(files);
 
-        // FileGrafAdapter graf = new FileGrafAdapter(filesCollection); // make graf
-        // graf.show(); // show graf
+        FileGraphAdapter graph = new FileGraphAdapter(filesConnectionInfo);
+        graph.show();
     }
 
 }

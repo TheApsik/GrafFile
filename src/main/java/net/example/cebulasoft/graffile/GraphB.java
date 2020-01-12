@@ -5,31 +5,26 @@
 
 package net.example.cebulasoft.graffile;
 
-import org.jgrapht.graph.*;
+import lombok.Getter;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.DirectedWeightedMultigraph;
 
+@Getter
+class GraphB {
 
-public class GraphB {
+    private DirectedWeightedMultigraph graph;
 
-    DirectedWeightedMultigraph B;
-
-    public GraphB(FilesConnectionInfo d)
-    {
-
-        B= buildGraph(d);
+    GraphB(FilesConnectionInfo filesConnectionInfo) {
+        graph = buildGraph(filesConnectionInfo);
     }
 
-    private static DirectedWeightedMultigraph<String,DefaultWeightedEdge> buildGraph(FilesConnectionInfo d)
-    {
-        DirectedWeightedMultigraph<String,DefaultWeightedEdge> graph = new DirectedWeightedMultigraph<>(DefaultWeightedEdge.class);
+    private static DirectedWeightedMultigraph<String, DefaultWeightedEdge> buildGraph(FilesConnectionInfo d) {
+        DirectedWeightedMultigraph<String, DefaultWeightedEdge> graph = new DirectedWeightedMultigraph<>(DefaultWeightedEdge.class);
 
-        // extract data from hashmap
-        for (String key : d.keySet())
-        {
-            FileInfo extracted = d.get(key); // pojedynczy obiekt fileinfo
-            graph.addVertex(extracted.getName()); //dodaj nazwę pliku jako punkt na grafie
-
+        for (String key : d.getKeySet()) {
+            FileInfo extracted = d.get(key);
+            graph.addVertex(extracted.getName());
         }
-        //end
 
         /*
          * INFO:
@@ -58,11 +53,4 @@ public class GraphB {
 
         return graph;
     }
-
-    public DirectedWeightedMultigraph getGraph()
-    {
-        return B;
-    }
-
-
 }
