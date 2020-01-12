@@ -2,6 +2,7 @@ package net.example.cebulasoft.graffile;
 
 import lombok.ToString;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -21,5 +22,13 @@ class FilesConnectionInfo {
 
     Set<String> getKeySet() {
         return fileInfoMap.keySet();
+    }
+
+    Set<Map.Entry<String, FileInfo>> getEntries() {
+        return fileInfoMap.entrySet();
+    }
+
+    Collection<FileInfo> getValues(){
+        return fileInfoMap.values();
     }
 }

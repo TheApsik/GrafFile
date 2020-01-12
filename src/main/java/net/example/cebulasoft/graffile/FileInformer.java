@@ -21,30 +21,7 @@ class FileInformer {
      */
     void scanFiles(List<String> filesFullNames) {
         extractFileInfos(filesFullNames);
-        findConnections(filesFullNames);
-        System.out.println(filesConnectionInfo);
-    }
-
-    private void findConnections(List<String> filesFullNames) {
-        for (String className : filesConnectionInfo.getKeySet()) {
-            for (String fileFullName : filesFullNames) {
-                if (sameClassAndFile(fileFullName, className)) {
-                    System.out.println(fileFullName + " " + className);
-                    continue;
-                }
-
-                try {
-                    Scanner scanner = new Scanner(new File(fileFullName));
-                    checkForOccurrencesInFile(className, scanner);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    private boolean sameClassAndFile(String fileFullName, String className) {
-        return extractName(fileFullName).equals(className);
+        findConnections();
     }
 
     private void extractFileInfos(List<String> filesFullNames) {
@@ -55,7 +32,7 @@ class FileInformer {
                     for (String line : scanner.nextLine().split(";")) {
                         if (line.contains("package ")) {
                             String fileName = extractName(fileFullName);
-                            filesConnectionInfo.put(fileName, FileInfo.of(extractPackagePath(line), fileName));
+                            filesConnectionInfo.put(fileName, FileInfo.of(extractPackagePath(line, fileName), fileFullName, fileName));
                         }
                     }
                 }
@@ -65,14 +42,30 @@ class FileInformer {
         }
     }
 
-    private void checkForOccurrencesInFile(String className, Scanner scanner) {
-        while (scanner.hasNextLine()) {
-            for (String line : scanner.nextLine().split(";")) {
-                if (line.matches("(.*) " + className + " (.*)")) {
-                    filesConnectionInfo.get(className).addReference();
-                    return;
+    private void findConnections() {
+        for (FileInfo fileInfo : filesConnectionInfo.getValues()) {
+            for (String className : filesConnectionInfo.getKeySet()) {
+                if (!className.equals(fileInfo.getName())) {
+                    checkForOccurrencesInFile(className, fileInfo);
                 }
             }
+        }
+    }
+
+    private void checkForOccurrencesInFile(String className, FileInfo fileInfo) {
+        try {
+            Scanner scanner = new Scanner(new File(fileInfo.getPath()));
+            System.out.println(fileInfo.getPath());
+            while (scanner.hasNextLine()) {
+                for (String line : scanner.nextLine().split(";")) {
+                    if (line.matches("(.*) " + className + "(.*)")) {
+                        System.out.println(className);
+                        filesConnectionInfo.get(fileInfo.getName()).addReference(className);
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
@@ -81,7 +74,7 @@ class FileInformer {
         return name.substring(0, name.lastIndexOf("."));
     }
 
-    private static String extractPackagePath(String line) {
-        return line.replace("package", "").replaceAll(" ", "");
+    private static String extractPackagePath(String line, String fileName) {
+        return line.replace("package", "").replaceAll(" ", "").concat("." + fileName);
     }
 }

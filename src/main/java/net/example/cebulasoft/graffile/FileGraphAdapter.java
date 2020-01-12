@@ -2,7 +2,7 @@
 package net.example.cebulasoft.graffile;
 
 /**
- * Połączenie GraphX i GraphB
+ * Połączenie Graph X i Graph B
  */
 class FileGraphAdapter {
     private GraphX graphX;

@@ -1,6 +1,3 @@
-/*
- * Klasa realizuje graficzną wersję grafu
- * */
 
 package net.example.cebulasoft.graffile;
 
@@ -13,15 +10,18 @@ import org.jgrapht.graph.DirectedWeightedMultigraph;
 
 import javax.swing.*;
 
+/**
+ * Klasa realizuje graficzną wersję grafu
+ */
 class GraphX {
 
     private JFrame frame;
 
-    private JGraphXAdapter<String, DefaultWeightedEdge> graphAdapter;
+    private JGraphXAdapter<String, FileWeightedEdge> graphAdapter;
     private mxIGraphLayout layout;
 
 
-    GraphX(DirectedWeightedMultigraph<String, DefaultWeightedEdge> baseGraph) {
+    GraphX(DirectedWeightedMultigraph<String, FileWeightedEdge> baseGraph) {
         this.frame = new JFrame("Graf");
         this.graphAdapter = new JGraphXAdapter<>(baseGraph);
 
