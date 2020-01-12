@@ -5,45 +5,83 @@ import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Scanner;
 
-public class FileInformer {
-    // filesNames {FileInfo.java, FileInformer.java, FileFinder.java, etc...}
-    public static void getInfo(List<String> filesNames, FilesConnectionInfo connections){
-        for (String fileName: filesNames) {
-            File file= new File(fileName);
+class FileInformer {
+
+    private final FilesConnectionInfo filesConnectionInfo;
+
+    FileInformer(FilesConnectionInfo filesConnectionInfo) {
+        this.filesConnectionInfo = filesConnectionInfo;
+    }
+
+    /**
+     * Scans all files to extract file names, packages and number of their occurrences in other files (counts only single occurrence in each file).
+     * Omits occurrences of class X in file X.
+     *
+     * @param filesFullNames List of files (absolute paths).
+     */
+    void scanFiles(List<String> filesFullNames) {
+        extractFileInfos(filesFullNames);
+        findConnections(filesFullNames);
+        System.out.println(filesConnectionInfo);
+    }
+
+    private void findConnections(List<String> filesFullNames) {
+        for (String className : filesConnectionInfo.getKeySet()) {
+            for (String fileFullName : filesFullNames) {
+                if (sameClassAndFile(fileFullName, className)) {
+                    System.out.println(fileFullName + " " + className);
+                    continue;
+                }
+
+                try {
+                    Scanner scanner = new Scanner(new File(fileFullName));
+                    checkForOccurrencesInFile(className, scanner);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private boolean sameClassAndFile(String fileFullName, String className) {
+        return extractName(fileFullName).equals(className);
+    }
+
+    private void extractFileInfos(List<String> filesFullNames) {
+        for (String fileFullName : filesFullNames) {
             try {
-                Scanner scanner = new Scanner(file);
-                while (scanner.hasNextLine()){
-                    String[] lines=scanner.nextLine().split(";");
-                    for (String line: lines) {
-                        if(line.indexOf("package")!=-1){
-                            String path= line.replace("package", "").replaceAll(" ","");
-                            int lastPointer= fileName.lastIndexOf(".");
-                            String name= fileName.substring(0, lastPointer);
-                            connections.put(name, new FileInfo(path, fileName));
+                Scanner scanner = new Scanner(new File(fileFullName));
+                while (scanner.hasNextLine()) {
+                    for (String line : scanner.nextLine().split(";")) {
+                        if (line.contains("package ")) {
+                            String fileName = extractName(fileFullName);
+                            filesConnectionInfo.put(fileName, FileInfo.of(extractPackagePath(line), fileName));
                         }
                     }
                 }
-            }catch (FileNotFoundException e){
+            } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
         }
-        for (String fileName: filesNames) {
-            File file= new File(fileName);
-            try {
-                Scanner scanner = new Scanner(file);
-                while (scanner.hasNextLine()){
-                    String[] lines=scanner.nextLine().split(";");
-                    for (String line: lines) {
-                        for (String className: connections.keySet()){
-                            if(line.indexOf(className)!=-1){
-                                connections.get(className).addReference("test"); //TODO: Naprawic polaczenie miedzy plikami(jedno dla wszystkich)
-                            }
-                        }
-                    }
+    }
+
+    private void checkForOccurrencesInFile(String className, Scanner scanner) {
+        while (scanner.hasNextLine()) {
+            for (String line : scanner.nextLine().split(";")) {
+                if (line.matches("(.*) " + className + " (.*)")) {
+                    filesConnectionInfo.get(className).addReference();
+                    return;
                 }
-            }catch (FileNotFoundException e){
-                e.printStackTrace();
             }
         }
+    }
+
+    private String extractName(String fileName) {
+        String name = fileName.substring(fileName.lastIndexOf("\\")).replace("\\", "");
+        return name.substring(0, name.lastIndexOf("."));
+    }
+
+    private static String extractPackagePath(String line) {
+        return line.replace("package", "").replaceAll(" ", "");
     }
 }

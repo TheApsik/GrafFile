@@ -1,27 +1,34 @@
 package net.example.cebulasoft.graffile;
 
-import java.util.HashMap;
 import java.util.List;
 
 public class FileController {
-    FilesConnectionInfo filesCollection; // contain all information about files like: size, connections between files, name and path.
 
-    public FileController(String catalog){
-        filesCollection = new FilesConnectionInfo();
-        List<String> listFile = FileFinder.getListOfFile("java", catalog); // take all file with extension .java and set them all names to list.
+    private final String baseDirectory;
+    private final FileFinder fileFinder;
+    private final FileInformer fileInformer;
 
-        FileInformer.getInfo(listFile, filesCollection); //get information of file and put it in to the container.
-
-        FileGrafAdapter graf = new FileGrafAdapter(filesCollection); // make graf
-        graf.show(); // show graf
-
+    private FileController(String baseDirectory, FileFinder fileFinder, FileInformer fileInformer) {
+        this.baseDirectory = baseDirectory;
+        this.fileFinder = fileFinder;
+        this.fileInformer = fileInformer;
     }
 
-    public static void main(String... args){
-        FilesConnectionInfo i= new FilesConnectionInfo();
-        FileGrafAdapter graf = new FileGrafAdapter(i); // make graf
-        graf.show(); // show graf
-        System.out.print("działa?");
+    public static void main(String... args) {
+        FilesConnectionInfo filesConnectionInfo = new FilesConnectionInfo();
+        FileController fc = new FileController(args[0], new FileFinder(), new FileInformer(filesConnectionInfo));
+        fc.scan();
+    }
+
+    /**
+     * Scans project from path given in argument, finds all classes and number of occurrences.
+     */
+    private void scan() {
+        List<String> files = fileFinder.getListOfFiles(this.baseDirectory);
+        fileInformer.scanFiles(files);
+
+        // FileGrafAdapter graf = new FileGrafAdapter(filesCollection); // make graf
+        // graf.show(); // show graf
     }
 
 }

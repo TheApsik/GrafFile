@@ -3,39 +3,32 @@ package net.example.cebulasoft.graffile;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
-public class FileFinder {
-    public static List<String> getListOfFile(String nameDirectory , String extension)
-    {
+class FileFinder {
+    private static final String JAVA_FILE_REGEX = "(.*).java";
 
-        File folder = new File(nameDirectory);
-
+    /**
+     * Gets list of all files in project.
+     *
+     * @param baseDirectory Path to project directory.
+     * @return List of files in project.
+     */
+    List<String> getListOfFiles(String baseDirectory) {
         List<String> result = new LinkedList<>();
-
-        search(".*\\"+extension, folder, result);
-
+        search(JAVA_FILE_REGEX, new File(baseDirectory), result);
         return result;
     }
 
-    public static void search(String pattern, File folder, List<String> result)
-    {
-        for (File f : folder.listFiles())
-        {
-
-            if (f.isDirectory())
-            {
+    private void search(String pattern, File folder, List<String> result) {
+        for (File f : Objects.requireNonNull(folder.listFiles())) {
+            if (f.isDirectory()) {
                 search(pattern, f, result);
-            }
-
-            if (f.isFile())
-            {
-                if (f.getName().matches(pattern))
-                {
+            } else if (f.isFile()) {
+                if (f.getName().matches(pattern)) {
                     result.add(f.getAbsolutePath());
                 }
             }
-
         }
     }
-
 }

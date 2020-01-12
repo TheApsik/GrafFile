@@ -1,20 +1,25 @@
 package net.example.cebulasoft.graffile;
 
+import lombok.ToString;
+
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
-// zamiana funkcionalnosci kals File[s]ConnectionInfo <=> FileInfo
-public class FilesConnectionInfo extends HashMap<String, FileInfo>
-{
+@ToString
+class FilesConnectionInfo {
 
-    @Override
-    public FileInfo put(String key, FileInfo info)
-    {
+    private final Map<String, FileInfo> fileInfoMap = new HashMap<>();
 
-        if(get(info.getName())!=null)
-        {
-            super.put(key, info);
-            return info;
-        }
-        return null;
+    void put(String key, FileInfo info) {
+        fileInfoMap.putIfAbsent(key, info);
+    }
+
+    FileInfo get(String className) {
+        return fileInfoMap.get(className);
+    }
+
+    Set<String> getKeySet() {
+        return fileInfoMap.keySet();
     }
 }
