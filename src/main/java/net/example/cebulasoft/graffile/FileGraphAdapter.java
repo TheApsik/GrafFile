@@ -1,4 +1,3 @@
-
 package net.example.cebulasoft.graffile;
 
 /**

@@ -28,6 +28,7 @@ class FileInformer {
         for (String fileFullName : filesFullNames) {
             try {
                 Scanner scanner = new Scanner(new File(fileFullName));
+
                 while (scanner.hasNextLine()) {
                     for (String line : scanner.nextLine().split(";")) {
                         if (line.contains("package ")) {
@@ -55,11 +56,9 @@ class FileInformer {
     private void checkForOccurrencesInFile(String className, FileInfo fileInfo) {
         try {
             Scanner scanner = new Scanner(new File(fileInfo.getPath()));
-            System.out.println(fileInfo.getPath());
             while (scanner.hasNextLine()) {
                 for (String line : scanner.nextLine().split(";")) {
                     if (line.matches("(.*) " + className + "(.*)")) {
-                        System.out.println(className);
                         filesConnectionInfo.get(fileInfo.getName()).addReference(className);
                     }
                 }
